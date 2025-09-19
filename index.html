@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EliteTime - элитные швейцарские часы в Ростове-на-Дону. Rolex, Omega, Patek Philippe с доставкой.">
+    <title>EliteTime - Ростов-на-Дону | Элитные часы премиум класса</title>
+</head>
+<body>
+    <header>
+        <h1>EliteTime Premium Watches</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#products">Каталог</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <h2>Элитные часы в Ростове-на-Дону</h2>
+            <p>Лучшие коллекции швейцарских часов с доставкой по всему городу</p>
+        </section>
+
+        <section id="products">
+            <h2>Наши коллекции</h2>
+            
+            <div class="product">
+                <h3>Rolex Submariner</h3>
+                <img src="rolex.png" alt="Rolex Submariner" width="300">
+                <p>Цена: 1 200 000 руб.</p>
+                <button>Купить</button>
+            </div>
+
+            <div class="product">
+                <h3>Omega Seamaster</h3>
+                <img src="omega.png" alt="Omega Seamaster" width="300">
+                <p>Цена: 850 000 руб.</p>
+                <button>Купить</button>
+            </div>
+
+            <div class="product">
+                <h3>Patek Philippe Nautilus</h3>
+                <img src="patek.jpg" alt="Patek Philippe Nautilus" width="300">
+                <p>Цена: 2 500 000 руб.</p>
+                <button>Купить</button>
+            </div>
+        </section>
+
+        <section id="video">
+            <h2>Видеообзор коллекции</h2>
+            <video width="600" controls>
+                <source src="6230465-hd_1920_1080_24fps.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео
+            </video>
+        </section>
+
+        <section id="audio">
+            <h2>Аудио-история бренда</h2>
+            <audio controls>
+                <source src="1723368346_irina-kairatovna-aidahar.mp3" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио
+            </audio>
+        </section>
+
+        <section id="contacts">
+            <h2>Наш магазин в ТРЦ "Миллениум"</h2>
+            <p>Адрес: Ростов-на-Дону, ул. Пушкинская, 1</p>
+            
+ 
+        </section>
+    </main>
+    <button onclick="getLocation()">Определить мое местоположение</button>
+            <p id="demo"></p>
+
+    <footer>
+        <p>Телефон: +7777777777777777</p>
+        <p>Email: danila@gmail.com</p>
+    </footer>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("demo").innerHTML = "Геолокация не поддерживается вашим браузером.";
+            }
+        }
+        
+        function showPosition(position) {
+            document.getElementById("demo").innerHTML = "Ваши координаты: Широта: " + position.coords.latitude + 
+            ", Долгота: " + position.coords.longitude;
+        }
+        
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("demo").innerHTML = "Вы отказались от предоставления геолокации.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("demo").innerHTML = "Информация о местоположении недоступна.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("demo").innerHTML = "Время запроса геолокации истекло.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("demo").innerHTML = "Произошла неизвестная ошибка.";
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
