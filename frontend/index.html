@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EliteTime — витрина часов, дашборд и карта с маркерами. Полный стек: HTML/CSS/JS + Express + PostgreSQL.">
+  <title>EliteTime — коллекция часов и дашборд</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">EliteTime</div>
+    <button class="nav-toggle" aria-label="Открыть меню">☰</button>
+    <nav class="nav-links">
+      <a href="#hero">Главная</a>
+      <a href="#listings">Каталог</a>
+      <a href="#dashboard">Дашборд</a>
+      <a href="#map">Карта</a>
+      <a href="#auth">Личный кабинет</a>
+    </nav>
+    <div class="user-chip" id="userChip">Гость</div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">MVP fullstack</p>
+        <h1>Кураторская подборка часов с дашбордом и картой</h1>
+        <p class="lead">Реальные данные из PostgreSQL: фильтруй ленту, смотри статистику, ставь маркеры и управляй карточками после авторизации.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#listings">К каталогу</a>
+          <a class="btn ghost" href="#auth">Войти или создать аккаунт</a>
+        </div>
+        <div class="hero-metrics" id="heroMetrics">
+          <div class="metric-card">
+            <span class="metric-label">Карточек</span>
+            <strong id="metricPosts">—</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Средний рейтинг</span>
+            <strong id="metricRating">—</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Города</span>
+            <strong id="metricCities">—</strong>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-card">
+          <img src="assets/rolex.png" alt="Rolex Submariner">
+          <div class="floating-meta">
+            <p>Submariner 41</p>
+            <span>1 200 000 ₽</span>
+          </div>
+        </div>
+        <div class="floating-card alt">
+          <img src="assets/omega.png" alt="Omega Seamaster">
+          <div class="floating-meta">
+            <p>Seamaster Diver</p>
+            <span>860 000 ₽</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="listings" class="section listings">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Каталог</p>
+          <h2>Живой слайдер объявлений</h2>
+          <p class="muted">Карточки приходят из API. Переключай стрелками или дождись авто‑анимации.</p>
+        </div>
+        <div class="filters">
+          <input type="search" id="searchInput" placeholder="Поиск по названию" />
+          <select id="ratingFilter">
+            <option value="">Рейтинг: все</option>
+            <option value="5">5 ⭐️</option>
+            <option value="4">4+ ⭐️</option>
+            <option value="3">3+ ⭐️</option>
+          </select>
+        </div>
+      </div>
+      <div class="slider">
+        <button class="slider-btn" id="prevSlide" aria-label="Предыдущая карточка">‹</button>
+        <div class="slider-track" id="sliderTrack">
+          <!-- Карточки приходят из JS -->
+        </div>
+        <button class="slider-btn" id="nextSlide" aria-label="Следующая карточка">›</button>
+      </div>
+    </section>
+
+    <section id="dashboard" class="section dashboard">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Дэшборд</p>
+          <h2>Статистика и таблица</h2>
+          <p class="muted">Chart.js + сортируемая таблица с живой фильтрацией.</p>
+        </div>
+        <div class="table-controls">
+          <input type="search" id="tableSearch" placeholder="Фильтр по городу или автору">
+          <button class="btn ghost" id="resetFilters">Сбросить фильтры</button>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card chart-card">
+          <canvas id="postsChart" aria-label="График динамики объявлений"></canvas>
+        </div>
+        <div class="card table-card">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th data-sort="title">Название</th>
+                  <th data-sort="rating">Рейтинг</th>
+                  <th data-sort="price">Цена</th>
+                  <th data-sort="city">Город</th>
+                  <th data-sort="author">Автор</th>
+                </tr>
+              </thead>
+              <tbody id="postsTableBody">
+                <!-- Заполняется из JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="section map-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Геолокация</p>
+          <h2>Карта с маркерами</h2>
+          <p class="muted">Leaflet + OSM. Маркеры по координатам из базы. Балун открывается по клику.</p>
+        </div>
+        <div class="geo-actions">
+          <button class="btn primary" id="locateMe">Определить меня</button>
+          <span class="muted" id="geoStatus">Геопозиция не получена</span>
+        </div>
+      </div>
+      <div class="map-grid">
+        <div id="mapCanvas" class="map-canvas" role="img" aria-label="Карта точек интереса"></div>
+        <div class="card geo-card">
+          <h3>Добавь координаты в новую карточку</h3>
+          <p class="muted">После авторизации ты сможешь создать запись с широтой и долготой — маркер появится на карте сразу.</p>
+          <ul class="hint-list">
+            <li>Плавная прокрутка к якорям</li>
+            <li>JS-анимация автослайдера</li>
+            <li>CSS-анимации наведения и loader</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="auth" class="section auth-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Личный кабинет</p>
+          <h2>Регистрация и вход</h2>
+          <p class="muted">JWT из Express. Данные уходят в Postgres. После входа становится доступна форма создания карточки.</p>
+        </div>
+      </div>
+      <div class="auth-grid">
+        <form class="card form" id="registerForm">
+          <h3>Регистрация</h3>
+          <label>Имя
+            <input name="name" required placeholder="Алексей">
+          </label>
+          <label>Email
+            <input type="email" name="email" required placeholder="you@example.com">
+          </label>
+          <label>Пароль
+            <input type="password" name="password" minlength="6" required placeholder="не короче 6 символов">
+          </label>
+          <button class="btn primary" type="submit">Создать аккаунт</button>
+        </form>
+
+        <form class="card form" id="loginForm">
+          <h3>Вход</h3>
+          <label>Email
+            <input type="email" name="email" required placeholder="you@example.com">
+          </label>
+          <label>Пароль
+            <input type="password" name="password" required>
+          </label>
+          <button class="btn primary" type="submit">Войти</button>
+        </form>
+
+        <form class="card form" id="createForm">
+          <div class="form-header">
+            <h3>Новая карточка</h3>
+            <span class="badge" id="authStatus">Требуется вход</span>
+          </div>
+          <label>Название
+            <input name="title" required placeholder="Patek Nautilus">
+          </label>
+          <label>Описание
+            <textarea name="body" rows="3" placeholder="состояние, комплектация, сервис"></textarea>
+          </label>
+          <div class="form-row">
+            <label>Рейтинг
+              <input type="number" name="rating" min="1" max="5" value="5">
+            </label>
+            <label>Цена (₽)
+              <input type="number" name="price" step="1000" placeholder="1200000">
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Город
+              <input name="city" placeholder="Москва">
+            </label>
+            <label>Широта / Долгота
+              <div class="coords">
+                <input name="latitude" step="0.000001" placeholder="55.75">
+                <input name="longitude" step="0.000001" placeholder="37.61">
+              </div>
+            </label>
+          </div>
+          <button class="btn ghost" type="button" id="copyMyCoords">Подставить мою геолокацию</button>
+          <button class="btn primary" type="submit">Создать</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <p class="logo">EliteTime</p>
+        <p class="muted">HTML/CSS/JS + Express + PostgreSQL + Docker Compose. Все требования курсового в одном проекте.</p>
+      </div>
+      <div>
+        <p class="muted">API: /api/register, /api/login, /api/posts</p>
+        <p class="muted">Git: осмысленные коммиты, README, .gitignore</p>
+      </div>
+    </div>
+    <p class="muted">© 2024 EliteTime. Сделано для защиты итогового проекта.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
