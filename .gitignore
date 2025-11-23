@@ -1,0 +1,19 @@
+# Node / backend
+node_modules
+npm-debug.log
+backend/node_modules
+
+# Env and secrets
+.env
+.env.local
+
+# Docker volumes
+docker-data/
+
+# IDE
+.idea/
+.vscode/
+
+# OS junk
+Thumbs.db
+*.DS_Store
